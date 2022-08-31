@@ -16,7 +16,7 @@
 
 nvidia-smi
 
-source ~/ENV/bin/activate
+source ~/envs/ENV/bin/activate
 
 cd $SLURM_TMPDIR
 
