@@ -1,1 +1,1 @@
-from doersch import *
+from code.datasets.segmentation.baselines.doersch import *
