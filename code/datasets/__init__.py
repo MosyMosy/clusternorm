@@ -1,2 +1,2 @@
-from clustering import *
-from segmentation import *
+from code.datasets.clustering import *
+from code.datasets.segmentation import *
