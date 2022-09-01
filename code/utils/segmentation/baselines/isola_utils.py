@@ -72,8 +72,8 @@ def isola_loss(adjacent_pred, centre, other, adjacent_gt, mask, verbose=False,
             torch.log(neg_adjacent_pred)).sum()
 
   if not np.isfinite(loss.cpu().item()):
-    print "Isola"
-    print loss
+    print ("Isola")
+    print (loss)
     assert (False)
 
   return loss
