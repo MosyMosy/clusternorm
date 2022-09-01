@@ -1,2 +1,2 @@
-from net10a_doersch import *
-from net10a_isola import *
+from code.archs.segmentation.baselines.net10a_doersch import *
+from code.archs.segmentation.baselines.net10a_isola import *

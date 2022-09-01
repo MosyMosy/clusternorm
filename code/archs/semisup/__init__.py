@@ -1,1 +1,1 @@
-from sup_head5 import *
+from code.archs.semisup.sup_head5 import *
