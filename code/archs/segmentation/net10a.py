@@ -1,7 +1,7 @@
 import torch.nn as nn
 import torch.nn.functional as F
 
-from ..cluster.vgg import VGGTrunk, VGGNet
+from code.archs.cluster.vgg import VGGTrunk, VGGNet
 
 __all__ = ["SegmentationNet10a"]
 

@@ -1,6 +1,6 @@
-from net10a import SegmentationNet10aHead, SegmentationNet10aTrunk, \
+from code.archs.segmentation.net10a import SegmentationNet10aHead, SegmentationNet10aTrunk, \
   SegmentationNet10a
-from ..cluster.vgg import VGGNet
+from code.archs.cluster.vgg import VGGNet
 
 __all__ = ["SegmentationNet10aTwoHead"]
 
