@@ -1,6 +1,6 @@
 import torch.nn as nn
 
-from vgg import VGGTrunk, VGGNet
+from code.archs.cluster.vgg import VGGTrunk, VGGNet
 
 # 4h but for cifar, 24x24
 
