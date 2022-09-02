@@ -259,7 +259,7 @@ def train():
       avg_loss_no_lamb = 0.
       avg_loss_count = 0
 
-      for tup in itertools.izip(*iterators):
+      for tup in zip(*iterators):
         net.module.zero_grad()
 
         if not config.no_sobel:

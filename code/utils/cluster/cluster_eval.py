@@ -243,7 +243,7 @@ def get_subhead_using_loss(config, dataloaders_head_B, net, sobel, lamb,
 
   b_i = 0
   loss_per_sub_head = np.zeros(config.num_sub_heads)
-  for tup in itertools.izip(*iterators):
+  for tup in zip(*iterators):
     net.module.zero_grad()
 
     dim = config.in_channels
