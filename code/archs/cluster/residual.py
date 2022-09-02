@@ -47,7 +47,7 @@ class BasicBlock_MixStyle(nn.Module):
 
   def __init__(self, inplanes, planes, stride=1, downsample=None,
                track_running_stats=None):
-    super(BasicBlock, self).__init__()
+    super(BasicBlock_MixStyle, self).__init__()
 
     assert (track_running_stats is not None)
 
