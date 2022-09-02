@@ -334,11 +334,11 @@ for e_i in range(next_epoch, config.num_epochs):
                         avg_loss_batch = loss
                         avg_loss_no_lamb_batch = loss_no_lamb
                     else:
-                        avg_loss_batch += loss
+                        avg_loss_batch = avg_loss_batch + loss
                         avg_loss_no_lamb_batch += loss_no_lamb
 
-                avg_loss_batch /= config.num_sub_heads
-                avg_loss_no_lamb_batch /= config.num_sub_heads
+                avg_loss_batch = avg_loss_batch / config.num_sub_heads
+                avg_loss_no_lamb_batch = avg_loss_no_lamb_batch / config.num_sub_heads
 
                 if ((b_i % 100) == 0) or (e_i == next_epoch and b_i < 10):
                     print("Model ind %d epoch %d head %s head_i_epoch %d batch %d: avg "
@@ -352,7 +352,7 @@ for e_i in range(next_epoch, config.num_epochs):
                     print("Loss is not finite... %s:" % str(avg_loss_batch))
                     exit(1)
 
-                avg_loss += avg_loss_batch.item()
+                avg_loss = avg_loss + avg_loss_batch.item()
                 avg_loss_no_lamb += avg_loss_no_lamb_batch.item()
                 avg_loss_count += 1
 
