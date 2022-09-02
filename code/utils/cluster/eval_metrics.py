@@ -4,7 +4,7 @@ import numpy as np
 import torch
 from sklearn import metrics
 # from sklearn.utils.linear_assignment_ import linear_assignment
-from scipy.optimize import linear_sum_assignment as linear_assignment
+from code.utils.cluster.linear_assignment_ import linear_assignment
 
 
 def _original_match(flat_preds, flat_targets, preds_k, targets_k):
@@ -49,6 +49,7 @@ def _hungarian_match(flat_preds, flat_targets, preds_k, targets_k):
 
   # return as list of tuples, out_c to gt_c
   res = []
+  
   for out_c, gt_c in match:
     res.append((out_c, gt_c))
 
