@@ -18,21 +18,15 @@ nvidia-smi
 
 source ~/envs/iic/bin/activate
 
-echo "change TORCH_HOME environment variable"
-cd $SLURM_TMPDIR
-cp -r ~/scratch/Pytorch_zoo .
-export TORCH_HOME=$SLURM_TMPDIR/Pytorch_zoo
-
 echo "------------------------------------< Data preparation>----------------------------------"
-echo "Copying the source code"
+echo "Copying the source code and datasets"
 date +"%T"
 cd $SLURM_TMPDIR
-cp -r ~/scratch/TLlib .
+cp -r ~/scratch/iic_clusternorm .
 
-echo "Copying the datasets"
-date +"%T"
-cd $SLURM_TMPDIR
-cp -r ~/scratch/TLlib_Dataset .
+echo "Extract the datasets"
+cd iic_clusternorm/iic_dataset
+tar -xzf cifar-10-python.tar.gz
 
 date +"%T"
 echo "----------------------------------< End of data preparation>--------------------------------"
@@ -41,14 +35,12 @@ echo "--------------------------------------------------------------------------
 
 echo "---------------------------------------<Run the program>------------------------------------"
 date +"%T"
-cd $SLURM_TMPDIR
-cd TLlib
-cd examples/domain_adaptation/image_classification
+cd $SLURM_TMPDIR/iic_clusternorm/clusternorm
 
-CUDA_VISIBLE_DEVICES=0 python -m code.scripts.cluster.cluster_sobel_twohead --model_ind 640  --arch ClusterNet5gTwoHead --mode IID --dataset CIFAR10 --dataset_root /scratch/local/ssd/xuji/CIFAR --gt_k 10 --output_k_A 70 --output_k_B 10 --lamb 1.0 --lr 0.0001  --num_epochs 2000 --batch_sz 660 --num_dataloaders 3 --num_sub_heads 5 --crop_orig --rand_crop_sz 20 --input_sz 32 --head_A_first --head_B_epochs 2
+CUDA_VISIBLE_DEVICES=0 python -m code.scripts.cluster.cluster_norm --model_ind 640  --arch ClusterNet5gTwoHead --mode IID --dataset CIFAR10 --dataset_root $SLURM_TMPDIR/iic_clusternorm/iic_dataset --gt_k 10 --output_k_A 70 --output_k_B 10 --lamb 1.0 --lr 0.0001  --num_epochs 2000 --batch_sz 660 --num_dataloaders 3 --num_sub_heads 5 --crop_orig --rand_crop_sz 20 --input_sz 32 --head_A_first --head_B_epochs 2 --out_root $SLURM_TMPDIR/cluster/cluster_norm_result1
 
 echo "-----------------------------------<End of run the program>---------------------------------"
 date +"%T"
 echo "--------------------------------------<backup the result>-----------------------------------"
 date +"%T"
-cp -r $SLURM_TMPDIR/TLlib/logs/nprior_20_101 ~/scratch/TLlib/logs/nprior_20_101
+cp -r $SLURM_TMPDIR/cluster/cluster_norm_result1 ~/scratch/iic_clusternorm/cluster_norm_result1
