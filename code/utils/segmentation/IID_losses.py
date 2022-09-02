@@ -68,10 +68,14 @@ def IID_segmentation_loss(x1_outs, x2_outs, all_affine2_to_1=None,
   p_j_mat = p_i_j.sum(dim=0).unsqueeze(0)  # 1, k
 
   # for log stability; tiny values cancelled out by mult with p_i_j anyway
-  p_i_j[(p_i_j < EPS).data] = EPS
-  p_i_mat[(p_i_mat < EPS).data] = EPS
-  p_j_mat[(p_j_mat < EPS).data] = EPS
+  # p_i_j[(p_i_j < EPS).data] = EPS
+  # p_i_mat[(p_i_mat < EPS).data] = EPS
+  # p_j_mat[(p_j_mat < EPS).data] = EPS
 
+  p_i_j = torch.clamp(p_i_j, min=EPS)
+  p_i_mat = torch.clamp(p_i_mat, min=EPS)
+  p_j_mat = torch.clamp(p_j_mat, min=EPS)
+  
   # maximise information
   loss = (-p_i_j * (torch.log(p_i_j) - lamb * torch.log(p_i_mat) -
                     lamb * torch.log(p_j_mat))).sum()
@@ -142,9 +146,13 @@ def IID_segmentation_loss_uncollapsed(x1_outs, x2_outs, all_affine2_to_1=None,
   p_j_mat = p_i_j.sum(dim=3, keepdim=True).repeat(1, 1, 1, k)
 
   # for log stability; tiny values cancelled out by mult with p_i_j anyway
-  p_i_j[(p_i_j < EPS).data] = EPS
-  p_i_mat[(p_i_mat < EPS).data] = EPS
-  p_j_mat[(p_j_mat < EPS).data] = EPS
+  # p_i_j[(p_i_j < EPS).data] = EPS
+  # p_i_mat[(p_i_mat < EPS).data] = EPS
+  # p_j_mat[(p_j_mat < EPS).data] = EPS
+  
+  p_i_j = torch.clamp(p_i_j, min=EPS)
+  p_i_mat = torch.clamp(p_i_mat, min=EPS)
+  p_j_mat = torch.clamp(p_j_mat, min=EPS)
 
   # maximise information
   loss = (-p_i_j * (torch.log(p_i_j) - lamb * torch.log(p_i_mat) -
