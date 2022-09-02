@@ -56,6 +56,6 @@ def print_weights_and_grad(net):
 
 def nice(dict):
   res = ""
-  for k, v in dict.iteritems():
+  for k, v in dict.items():
     res += ("\t%s: %s\n" % (k, v))
   return res
