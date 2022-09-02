@@ -1,6 +1,6 @@
 import torch.nn as nn
 
-from code.archs.cluster.residual import BasicBlock, ResNet, ResNetTrunk
+from code.archs.cluster.residual import BasicBlock, BasicBlock_MixStyle, ResNet, ResNetTrunk
 
 # resnet34 and full channels
 
@@ -8,12 +8,12 @@ __all__ = ["ClusterNet5g"]
 
 
 class ClusterNet5gTrunk(ResNetTrunk):
-  def __init__(self, config):
+  def __init__(self, config, block = BasicBlock):
     super(ClusterNet5gTrunk, self).__init__()
 
     self.batchnorm_track = config.batchnorm_track
 
-    block = BasicBlock
+    # block = BasicBlock
     layers = [3, 4, 6, 3]
 
     in_channels = config.in_channels

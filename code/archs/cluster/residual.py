@@ -1,5 +1,5 @@
 import torch.nn as nn
-
+from code.archs.cluster.cluster_mixstyle import cluster_MixStyle
 
 def conv3x3(in_planes, out_planes, stride=1):
   """3x3 convolution with padding"""
@@ -42,6 +42,42 @@ class BasicBlock(nn.Module):
 
     return out
 
+class BasicBlock_MixStyle(nn.Module):
+  expansion = 1
+
+  def __init__(self, inplanes, planes, stride=1, downsample=None,
+               track_running_stats=None):
+    super(BasicBlock, self).__init__()
+
+    assert (track_running_stats is not None)
+
+    self.conv1 = conv3x3(inplanes, planes, stride)
+    self.bn1 = nn.BatchNorm2d(planes, track_running_stats=track_running_stats)
+    self.relu = nn.ReLU(inplace=True)
+    self.conv2 = conv3x3(planes, planes)
+    self.bn2 = nn.BatchNorm2d(planes, track_running_stats=track_running_stats)
+    self.downsample = downsample
+    self.stride = stride
+    self.cluster_mixstyle = cluster_MixStyle(p=0.5, alpha=0.1)
+
+  def forward(self, x):
+    residual = x
+
+    out = self.conv1(x)
+    out = self.bn1(out)
+    out = self.relu(out)
+
+    out = self.conv2(out)
+    out = self.bn2(out)
+
+    if self.downsample is not None:
+      residual = self.downsample(x)
+
+    out += residual
+    out = self.cluster_mixstyle(out)
+    out = self.relu(out)
+
+    return out
 
 class ResNetTrunk(nn.Module):
   def __init__(self):
