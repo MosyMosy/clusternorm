@@ -181,7 +181,7 @@ def apply_trained_kmeans(config, net, test_dataloader, kmeans):
     nmi, ari = -1., -1.
 
   reordered_masses = np.zeros(config.gt_k)
-  for c in xrange(config.gt_k):
+  for c in range(config.gt_k):
     reordered_masses[c] = float(
       (reordered_preds == c).sum()) / actual_num_unmasked
 

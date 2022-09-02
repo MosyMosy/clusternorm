@@ -292,7 +292,7 @@ def _create_dataloaders(config, dataset_class, tf1, tf2,
                        torch.utils.data.sampler.SequentialSampler))
   dataloaders = [train_dataloader]
 
-  for d_i in xrange(config.num_dataloaders):
+  for d_i in range(config.num_dataloaders):
     print("Creating auxiliary dataloader ind %d out of %d time %s" %
           (d_i, config.num_dataloaders, datetime.now()))
     sys.stdout.flush()

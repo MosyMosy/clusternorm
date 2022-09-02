@@ -33,7 +33,7 @@ def reorder_train_deterministic(dataset):
 
   # 0, 5000...5019, 1, 5020...5039, 2, ... 4999, 104980 ... 104999
   ids = []
-  for i in xrange(5000):
+  for i in range(5000):
     ids.append(i)
     ids += range(5000 + i * 20, 5000 + (i + 1) * 20)
 

@@ -191,7 +191,7 @@ fig, axarr = plt.subplots(4, sharex=False, figsize=(20, 20))
 
 # Train ------------------------------------------------------------------------
 
-for e_i in xrange(next_epoch, config.num_epochs):
+for e_i in range(next_epoch, config.num_epochs):
   print("Starting e_i: %d" % (e_i))
 
   if e_i in config.lr_schedule:
@@ -262,12 +262,12 @@ for e_i in xrange(next_epoch, config.num_epochs):
   axarr[1].set_title("Loss")
 
   axarr[2].clear()
-  for c in xrange(config.gt_k):
+  for c in range(config.gt_k):
     axarr[2].plot(config.masses[:, c])
   axarr[2].set_title("masses")
 
   axarr[3].clear()
-  for c in xrange(config.gt_k):
+  for c in range(config.gt_k):
     axarr[3].plot(config.per_class_acc[:, c])
   axarr[3].set_title("per_class_acc")
 

@@ -150,7 +150,7 @@ for model_ind in model_inds:
         exit(0)
 
       colour_map_raw = [(np.random.rand(3) * 255.).astype(np.uint8)
-                        for _ in xrange(max(config.output_k, config.gt_k))]
+                        for _ in range(max(config.output_k, config.gt_k))]
 
       # coco: green (veg) (7, 130, 42), blue (sky) (39, 159, 216),
       # grey (road) (82, 91, 96), red (person - if used) (229, 57, 57)
@@ -164,9 +164,9 @@ for model_ind in model_inds:
         colour_map_gt = colour_map_raw
 
       # render first batch
-      predicted_all = [0 for _ in xrange(config.gt_k)]
-      correct_all = [0 for _ in xrange(config.gt_k)]
-      all_all = [0 for _ in xrange(config.gt_k)]
+      predicted_all = [0 for _ in range(config.gt_k)]
+      correct_all = [0 for _ in range(config.gt_k)]
+      all_all = [0 for _ in range(config.gt_k)]
 
       if imgs_dataloader_name == "test":
         imgs_dataloader = mapping_test_dataloader
@@ -215,7 +215,7 @@ for model_ind in model_inds:
         assert (flat_targets.max() < config.gt_k)
 
         # print iou per class
-        for c in xrange(config.gt_k):
+        for c in range(config.gt_k):
           preds = (reordered_preds == c)
           targets = (flat_targets == c)
 
@@ -279,7 +279,7 @@ for model_ind in model_inds:
         print("... rendered batch %d, next_img_ind %d " % (b_i, next_img_ind))
         sys.stdout.flush()
 
-      for c in xrange(config.gt_k):
+      for c in range(config.gt_k):
         iou = correct_all[c] / float(all_all[c])
         print("class %d: name %s: pred %d correct %d all %d %f iou" %
               (c, all_label_names[c], predicted_all[c], correct_all[c],

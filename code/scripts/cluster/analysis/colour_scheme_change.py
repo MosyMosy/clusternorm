@@ -81,7 +81,7 @@ for i in args.file_indices:
     new_img.save(os.path.join(out_dir, "c_%d_%s" % (c, fname)))
 
 # make composites
-for c in xrange(len(scheme)):
+for c in range(len(scheme)):
   fnames = [args.file_pattern % i for i in args.file_indices]
   fnames = ["c_%d_%s" % (c, fname) for fname in fnames]
   fnames = [os.path.join(out_dir, fname) for fname in fnames]

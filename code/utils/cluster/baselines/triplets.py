@@ -205,7 +205,7 @@ def triplets_eval(config, net, dataloader_test, sobel):
 
   mass = np.zeros((1, config.gt_k))
   per_class_acc = np.zeros((1, config.gt_k))
-  for c in xrange(config.gt_k):
+  for c in range(config.gt_k):
     flags = (reordered_preds == c)
     actual = (flat_targets_all == c)
     mass[0, c] = flags.sum().item()

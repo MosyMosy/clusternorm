@@ -90,7 +90,7 @@ def main():
                   ]
   else:
     colour_map = [(np.random.rand(3) * 255.).astype(np.uint8)
-                  for _ in xrange(config.gt_k)]
+                  for _ in range(config.gt_k)]
 
   # so it's a random order in forward pass
   save_names = np.random.permutation(NUM_TRAIN)  # order in input_blocks
@@ -168,8 +168,8 @@ def split_imgs(img_ind, img, next_index, names, cut,
   assert h % cut == 0
 
   offset = 0
-  for i_h in xrange(num_blocks):
-    for i_w in xrange(num_blocks):
+  for i_h in range(num_blocks):
+    for i_w in range(num_blocks):
       start_h = i_h * cut
       start_w = i_w * cut
       img_curr = img[start_h:(start_h + cut), start_w:(start_w + cut), :]
@@ -199,8 +199,8 @@ def filter_gt_and_store(config, img_ind, gt, rescale, rerescale, colour_map,
   assert (c == 3)
 
   recoloured = np.zeros((h, w, 3), dtype=np.uint8)
-  for y in xrange(h):
-    for x in xrange(w):
+  for y in range(h):
+    for x in range(w):
       colour = str(list(gt[y, x]))
       gt_c = colour_dict[colour]
 
@@ -253,7 +253,7 @@ def predict_and_reassemble(config, input_blocks, num_big_imgs,
     num_batches += 1
 
   flat_preds = np.zeros((num_imgs, h, w), dtype=np.int32)
-  for b_i in xrange(num_batches):
+  for b_i in range(num_batches):
     start = b_i * config.batch_sz
     end_excl = min(num_imgs, start + config.batch_sz)
     imgs = torch.from_numpy(input_blocks[start:end_excl, :, :, :].astype(
@@ -271,7 +271,7 @@ def predict_and_reassemble(config, input_blocks, num_big_imgs,
   # Apply match
   if not (args.best_match == []):
     best_match = []
-    for pred_i in xrange(config.output_k):
+    for pred_i in range(config.output_k):
       best_match.append(pred_i, args.best_match[pred_i])
   else:
     best_epoch = np.argmax(np.array(config.epoch_acc))
@@ -301,7 +301,7 @@ def predict_and_reassemble(config, input_blocks, num_big_imgs,
   output_imgs = np.zeros((num_big_imgs, output_h_w, output_h_w, 3),
                          dtype=np.uint8)
 
-  for name in xrange(num_imgs):
+  for name in range(num_imgs):
     output_img_i, h_i, w_i = save_names_to_orig_pos[name]
     output_h_i, output_w_i = h_i * trimmed_h_w, w_i * trimmed_h_w
     output_imgs[output_img_i, output_h_i:(output_h_i + trimmed_h_w),
@@ -309,7 +309,7 @@ def predict_and_reassemble(config, input_blocks, num_big_imgs,
       coloured_preds[name, 1:(h - 1), 1:(w - 1), :]
 
   # Save
-  for output_img_i in xrange(num_big_imgs):
+  for output_img_i in range(num_big_imgs):
     Image.fromarray(output_imgs[output_img_i, :, :, :]).save(
       os.path.join(out_dir, "%d_preds.png" % output_img_i))
 
