@@ -79,6 +79,39 @@ class BasicBlock_MixStyle(nn.Module):
 
     return out
 
+class multi_input_Sequential(nn.Sequential):
+    def forward(self, *inputs):
+        for module in self._modules.values():
+            if type(inputs) == tuple:
+                inputs = module(*inputs)
+            else:
+                inputs = module(inputs)
+        return inputs
+
+class clusternorm_ResNetTrunk(nn.Module):
+  def __init__(self):
+    super(clusternorm_ResNetTrunk, self).__init__()
+
+  def _make_layer(self, block, planes, blocks, stride=1):
+    downsample = None
+    if stride != 1 or self.inplanes != planes * block.expansion:
+      downsample = multi_input_Sequential(
+        nn.Conv2d(self.inplanes, planes * block.expansion,
+                  kernel_size=1, stride=stride, bias=False),
+        nn.BatchNorm2d(planes * block.expansion,
+                       track_running_stats=self.batchnorm_track),
+      )
+
+    layers = []
+    layers.append(block(self.inplanes, planes, stride, downsample,
+                        track_running_stats=self.batchnorm_track))
+    self.inplanes = planes * block.expansion
+    for i in range(1, blocks):
+      layers.append(
+        block(self.inplanes, planes, track_running_stats=self.batchnorm_track))
+
+    return multi_input_Sequential(*layers)
+  
 class ResNetTrunk(nn.Module):
   def __init__(self):
     super(ResNetTrunk, self).__init__()

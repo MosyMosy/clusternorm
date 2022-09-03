@@ -1,13 +1,13 @@
 import torch.nn as nn
 
-from code.archs.cluster.residual import BasicBlock, BasicBlock_MixStyle, ResNet, ResNetTrunk
+from code.archs.cluster.residual import BasicBlock, BasicBlock_MixStyle, ResNet, clusternorm_ResNetTrunk
 
 # resnet34 and full channels
 
 __all__ = ["ClusterNorm_Net5g"]
 
 
-class ClusterNorm_Net5gTrunk(ResNetTrunk):
+class ClusterNorm_Net5gTrunk(clusternorm_ResNetTrunk):
   def __init__(self, config):
     super(ClusterNorm_Net5gTrunk, self).__init__()
 
