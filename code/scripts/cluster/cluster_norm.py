@@ -322,7 +322,7 @@ for e_i in range(next_epoch, config.num_epochs):
                 all_imgs = sobel_process(all_imgs, config.include_rgb)
                 all_imgs_tf = sobel_process(all_imgs_tf, config.include_rgb)
 
-                with torch.no_grad:
+                with torch.no_grad():
                     x_cluster_map = net(all_imgs, head=head)
                     x_tf_cluster_map = net(all_imgs_tf, head=head)
                 
