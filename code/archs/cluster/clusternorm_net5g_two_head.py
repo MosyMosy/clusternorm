@@ -1,6 +1,6 @@
 import torch.nn as nn
 
-from code.archs.cluster.net5g import ClusterNet5gTrunk
+from code.archs.cluster.net5g import ClusterNorm_Net5gTrunk
 from code.archs.cluster.residual import BasicBlock, BasicBlock_MixStyle, ResNet
 
 # resnet34 and full channels
@@ -46,7 +46,7 @@ class ClusterNormNet5gTwoHead(ResNet):
 
     self.batchnorm_track = config.batchnorm_track
 
-    self.trunk = ClusterNet5gTrunk(config, block=BasicBlock_MixStyle)
+    self.trunk = ClusterNorm_Net5gTrunk(config)
 
     self.head_A = ClusterNormNet5gTwoHeadHead(config, output_k=config.output_k_A)
 
@@ -61,11 +61,12 @@ class ClusterNormNet5gTwoHead(ResNet):
 
   def forward(self, x, head="B", kmeans_use_features=False,
               trunk_features=False,
-              penultimate_features=False):
+              penultimate_features=False,
+              cluster_map = None):
     # default is "B" for use by eval code
     # training script switches between A and B
 
-    x = self.trunk(x, penultimate_features=penultimate_features)
+    x = self.trunk(x, penultimate_features=penultimate_features, cluster_map = cluster_map)
 
     if trunk_features:  # for semisup
       return x

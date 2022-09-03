@@ -34,8 +34,8 @@ class cluster_MixStyle(nn.Module):
     def update_mix_method(self, mix='random'):
         self.mix = mix
 
-    def forward(self, x):
-        if not self.training or not self._activated:
+    def forward(self, x, cluster_map):
+        if not self.training or not self._activated or (cluster_map is None):
             return x
 
         if random.random() > self.p:
@@ -52,22 +52,24 @@ class cluster_MixStyle(nn.Module):
         lmda = self.beta.sample((B, 1, 1, 1))
         lmda = lmda.to(x.device)
 
-        if self.mix == 'random':
-            # random shuffle
-            perm = torch.randperm(B)
+        # if self.mix == 'random':
+        #     # random shuffle
+        #     perm = torch.randperm(B)
 
-        elif self.mix == 'crossdomain':
-            # split into two halves and swap the order
-            perm = torch.arange(B - 1, -1, -1) # inverse index
-            perm_b, perm_a = perm.chunk(2)
-            perm_b = perm_b[torch.randperm(B // 2)]
-            perm_a = perm_a[torch.randperm(B // 2)]
-            perm = torch.cat([perm_b, perm_a], 0)
+        # elif self.mix == 'crossdomain':
+        #     # split into two halves and swap the order
+        #     perm = torch.arange(B - 1, -1, -1) # inverse index
+        #     perm_b, perm_a = perm.chunk(2)
+        #     perm_b = perm_b[torch.randperm(B // 2)]
+        #     perm_a = perm_a[torch.randperm(B // 2)]
+        #     perm = torch.cat([perm_b, perm_a], 0)
 
-        else:
-            raise NotImplementedError
+        # else:
+        #     raise NotImplementedError
 
-        mu2, sig2 = mu[perm], sig[perm]
+        # mu2, sig2 = mu[perm], sig[perm]
+        
+        mu2, sig2 = mu, sig
         mu_mix = mu*lmda + mu2 * (1-lmda)
         sig_mix = sig*lmda + sig2 * (1-lmda)
 

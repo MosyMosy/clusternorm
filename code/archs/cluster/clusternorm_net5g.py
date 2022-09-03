@@ -1,19 +1,19 @@
 import torch.nn as nn
 
-from code.archs.cluster.residual import BasicBlock, BasicBlock_MixStyle, ResNet, ResNetTrunk
+from code.archs.cluster.residual import BasicBlock, ResNet, ResNetTrunk
 
 # resnet34 and full channels
 
-__all__ = ["ClusterNorm_Net5g"]
+__all__ = ["ClusterNet5g"]
 
 
-class ClusterNorm_Net5gTrunk(ResNetTrunk):
+class ClusterNet5gTrunk(ResNetTrunk):
   def __init__(self, config):
-    super(ClusterNorm_Net5gTrunk, self).__init__()
+    super(ClusterNet5gTrunk, self).__init__()
 
     self.batchnorm_track = config.batchnorm_track
 
-    block = BasicBlock_MixStyle
+    block = BasicBlock
     layers = [3, 4, 6, 3]
 
     in_channels = config.in_channels
@@ -38,19 +38,19 @@ class ClusterNorm_Net5gTrunk(ResNetTrunk):
 
     self.avgpool = nn.AvgPool2d(avg_pool_sz, stride=1)
 
-  def forward(self, x, cluster_map, penultimate_features=False):
+  def forward(self, x, penultimate_features=False):
     x = self.conv1(x)
     x = self.bn1(x)
     x = self.relu(x)
     x = self.maxpool(x)
 
-    x = self.layer1(x, cluster_map)
-    x = self.layer2(x, cluster_map)
-    x = self.layer3(x, cluster_map)
+    x = self.layer1(x)
+    x = self.layer2(x)
+    x = self.layer3(x)
 
     if not penultimate_features:
       # default
-      x = self.layer4(x, cluster_map)
+      x = self.layer4(x)
       x = self.avgpool(x)
 
     x = x.view(x.size(0), -1)
@@ -80,14 +80,14 @@ class ClusterNet5gHead(nn.Module):
     return results
 
 
-class ClusterNorm_Net5g(ResNet):
+class ClusterNet5g(ResNet):
   def __init__(self, config):
     # no saving of configs
-    super(ClusterNorm_Net5g, self).__init__()
+    super(ClusterNet5g, self).__init__()
 
     self.batchnorm_track = config.batchnorm_track
 
-    self.trunk = ClusterNorm_Net5gTrunk(config)
+    self.trunk = ClusterNet5gTrunk(config)
     self.head = ClusterNet5gHead(config)
 
     self._initialize_weights()
