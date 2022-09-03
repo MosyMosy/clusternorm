@@ -1,6 +1,6 @@
 import torch.nn as nn
 
-from code.archs.cluster.net5g import ClusterNorm_Net5gTrunk
+from code.archs.cluster.clusternorm_net5g import ClusterNorm_Net5gTrunk
 from code.archs.cluster.residual import BasicBlock, BasicBlock_MixStyle, ResNet
 
 # resnet34 and full channels
