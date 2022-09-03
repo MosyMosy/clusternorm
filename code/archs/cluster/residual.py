@@ -60,7 +60,7 @@ class BasicBlock_MixStyle(nn.Module):
     self.stride = stride
     self.cluster_mixstyle = cluster_MixStyle(p=0.5, alpha=0.1)
 
-  def forward(self, x, cluster_map):
+  def forward(self, x, cluster_map = None):
     residual = x
 
     out = self.conv1(x)
