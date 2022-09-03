@@ -325,8 +325,8 @@ for e_i in range(next_epoch, config.num_epochs):
                 with torch.no_grad():
                     x_cluster_map = net(all_imgs, head=head)
                     x_tf_cluster_map = net(all_imgs_tf, head=head)
-                    print(x_cluster_map)
-                    print(x_tf_cluster_map)
+                    print(x_cluster_map.size())
+                    print(x_tf_cluster_map.size())
                 x_outs = net(all_imgs, head=head, cluster_map = x_cluster_map)
                 x_tf_outs = net(all_imgs_tf, head=head, cluster_map = x_tf_cluster_map)
 
