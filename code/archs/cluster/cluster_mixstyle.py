@@ -40,41 +40,35 @@ class cluster_MixStyle(nn.Module):
 
         if random.random() > self.p:
             return x
-
-        B = x.size(0)
-
-        mu = x.mean(dim=[2, 3], keepdim=True)
-        var = x.var(dim=[2, 3], keepdim=True)
-        sig = (var + self.eps).sqrt()
-        mu, sig = mu.detach(), sig.detach()
-        x_normed = (x-mu) / sig
-
-        lmda = self.beta.sample((B, 1, 1, 1))
+        
+        lmda = self.beta.sample((x.size(0), 1, 1, 1))
         lmda = lmda.to(x.device)
 
-        # if self.mix == 'random':
-        #     # random shuffle
-        #     perm = torch.randperm(B)
-
-        # elif self.mix == 'crossdomain':
-        #     # split into two halves and swap the order
-        #     perm = torch.arange(B - 1, -1, -1) # inverse index
-        #     perm_b, perm_a = perm.chunk(2)
-        #     perm_b = perm_b[torch.randperm(B // 2)]
-        #     perm_a = perm_a[torch.randperm(B // 2)]
-        #     perm = torch.cat([perm_b, perm_a], 0)
-
-        # else:
-        #     raise NotImplementedError
-
-        # mu2, sig2 = mu[perm], sig[perm]
+        # Turn the first head's probabilities to one-hot
+        cluster_map_one_hot = torch.argmax(cluster_map[0], dim=1)
+        _, cluster_map_count = torch.unique(cluster_map_one_hot, sorted=True, return_counts=True)
+        cluster_map_split_ind = torch.cumsum(cluster_map_count, dim=0, dtype=torch.int32) - 1 # make index as zero-based
+        cluster_map_sorted_ind = torch.argsort(cluster_map_one_hot, dim=0)        
+        clustered_samples = torch.split(x[cluster_map_sorted_ind], cluster_map_split_ind)
+            
+        # Statistics over sample's spatial dimensions
+        sample_mu = clustered_samples.mean(dim=[3, 4], keepdim=True).detach()
+        sample_std = ((clustered_samples.var(dim=[3, 4], keepdim=True) + self.eps).sqrt()).detach()
+        clustered_samples_normed = (clustered_samples - sample_mu) / sample_std
         
-        mu2, sig2 = mu, sig
-        mu_mix = mu*lmda + mu2 * (1-lmda)
-        sig_mix = sig*lmda + sig2 * (1-lmda)
+        # Statistics over each cluster
+        cluster_mu = clustered_samples.mean(dim=[1, 3, 4], keepdim=True).detach()
+        cluster_std = ((clustered_samples.var(dim=[1, 3, 4], keepdim=True) + self.eps).sqrt()).detach()
 
-        return x_normed*sig_mix + mu_mix
-    
+        mu_mix = sample_mu * lmda + torch.unsqueeze(cluster_mu, 1) * (1-lmda)
+        std_mix = sample_std * lmda + torch.unsqueeze(cluster_std, 1) * (1-lmda)
+        
+        cluster_mixstyle = clustered_samples_normed * std_mix + mu_mix
+        cluster_mixstyle = torch.flatten(cluster_mixstyle, end_dim=0)
+        cluster_map_sorted_ind_inverse = torch.argsort(cluster_map_sorted_ind, dim=0)        
+        # resort the samples as it was originally. This essential to have a valid cluster_map for the subsequent layers
+        return cluster_mixstyle[cluster_map_sorted_ind_inverse] 
+        
     @staticmethod
     def activate_mixstyle(m):
         if type(m) == cluster_MixStyle:
