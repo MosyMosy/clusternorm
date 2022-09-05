@@ -46,6 +46,7 @@ class cluster_MixStyle(nn.Module):
         # Turn the first head's probabilities to one-hot
         cluster_map_one_hot = torch.argmax(cluster_map[0], dim=1)
         _, cluster_map_count = torch.unique(cluster_map_one_hot, sorted=True, return_counts=True)
+        print(cluster_map_count)
         cluster_map_split_ind = torch.cumsum(cluster_map_count, dim=0, dtype=torch.int32) - 1 # make index as zero-based
         cluster_map_sorted_ind = torch.argsort(cluster_map_one_hot, dim=0)        
         clustered_samples = torch.split(x[cluster_map_sorted_ind], cluster_map_split_ind.tolist())
