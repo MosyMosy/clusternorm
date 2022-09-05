@@ -1,3 +1,4 @@
+from code.global_device import global_device
 import os
 import sys
 from colorsys import hsv_to_rgb
@@ -48,7 +49,7 @@ def save_progress(config, net, mapping_assignment_dataloader,
   num_samples, C = soft_preds.shape
   assert (C == config.gt_k)
   reordered_soft_preds = torch.zeros((num_samples, config.gt_k),
-                                     dtype=soft_preds.dtype).cuda()
+                                     dtype=soft_preds.dtype).to(global_device)
   for pred_i, target_i in match:
     reordered_soft_preds[:, GT_TO_ORDER[target_i]] += \
       soft_preds[:, pred_i]  # 1-1 for IIC

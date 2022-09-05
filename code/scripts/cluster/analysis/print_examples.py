@@ -1,3 +1,4 @@
+from code.global_device import global_device
 import argparse
 import itertools
 import os
@@ -33,7 +34,7 @@ model_path = os.path.join(config.out_dir, "best_net.pytorch")
 net.load_state_dict(
   torch.load(model_path, map_location=lambda storage, loc: storage))
 
-net.cuda()
+net.to(global_device)
 net.eval()
 
 net = torch.nn.DataParallel(net)
@@ -91,7 +92,7 @@ for tup in zip(*iterators):
   train_batch = tup[0]
   render_batch = tup[1]
 
-  imgs = train_batch[0].cuda()
+  imgs = train_batch[0].to(global_device)
   orig_imgs = render_batch[0]
 
   if sobel:

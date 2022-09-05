@@ -1,4 +1,6 @@
 from __future__ import print_function
+from code.global_device import global_device
+
 
 import argparse
 import itertools
@@ -145,7 +147,7 @@ if config.restart:
 
   net.load_state_dict(
     torch.load(model_path, map_location=lambda storage, loc: storage))
-net.cuda()
+net.to(global_device)
 net = torch.nn.DataParallel(net)
 net.train()
 
@@ -205,9 +207,9 @@ for e_i in range(next_epoch, config.num_epochs):
   for tup in zip(*iterators):
     net.module.zero_grad()
 
-    imgs_orig = tup[0][0].cuda()
-    imgs_pos = tup[1][0].cuda()
-    imgs_neg = tup[2][0].cuda()
+    imgs_orig = tup[0][0].to(global_device)
+    imgs_pos = tup[1][0].to(global_device)
+    imgs_neg = tup[2][0].to(global_device)
 
     outs_orig = net(imgs_orig)
     outs_pos = net(imgs_pos)
@@ -287,7 +289,7 @@ for e_i in range(next_epoch, config.num_epochs):
                  os.path.join(config.out_dir, "latest_optimiser.pytorch"))
       config.last_epoch = e_i  # for last saved version
 
-    net.module.cuda()
+    net.module.to(global_device)
 
   with open(os.path.join(config.out_dir, "config.pickle"),
             'wb') as outfile:

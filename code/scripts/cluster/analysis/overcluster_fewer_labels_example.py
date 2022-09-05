@@ -1,4 +1,5 @@
 from __future__ import print_function
+from code.global_device import global_device
 
 import argparse
 import os
@@ -98,7 +99,7 @@ for pc in new_assign_set_szs_pc:
   model_path = os.path.join(config.out_dir, "best_net.pytorch")
   net.load_state_dict(
     torch.load(model_path, map_location=lambda storage, loc: storage))
-  net.cuda()
+  net.to(global_device)
 
   if given_config.use_eval:
     print("doing eval mode")

@@ -1,3 +1,4 @@
+from code.global_device import global_device
 from datetime import datetime
 from sys import stdout as sysout
 
@@ -42,7 +43,7 @@ def train_kmeans(config, net, test_dataloader):
       sysout.flush()
 
     imgs, _, mask = tup  # test dataloader, cpu tensors
-    imgs = imgs.cuda()
+    imgs = imgs.to(global_device)
     mask = mask.numpy().astype(np.bool)
     # mask = mask.numpy().astype(np.bool)
     num_unmasked = mask.sum()
@@ -115,8 +116,8 @@ def apply_trained_kmeans(config, net, test_dataloader, kmeans):
   # on the entire test dataset
   num_imgs = len(test_dataloader.dataset)
   max_num_samples = num_imgs * config.input_sz * config.input_sz
-  preds_all = torch.zeros(max_num_samples, dtype=torch.int32).cuda()
-  targets_all = torch.zeros(max_num_samples, dtype=torch.int32).cuda()
+  preds_all = torch.zeros(max_num_samples, dtype=torch.int32).to(global_device)
+  targets_all = torch.zeros(max_num_samples, dtype=torch.int32).to(global_device)
 
   actual_num_unmasked = 0
 
@@ -127,8 +128,8 @@ def apply_trained_kmeans(config, net, test_dataloader, kmeans):
       sysout.flush()
 
     imgs, targets, mask = tup  # test dataloader, cpu tensors
-    imgs, mask_cuda, targets, mask_np = imgs.cuda(), mask.cuda(), \
-                                        targets.cuda(), mask.numpy().astype(
+    imgs, mask_cuda, targets, mask_np = imgs.to(global_device), mask.to(global_device), \
+                                        targets.to(global_device), mask.numpy().astype(
       np.bool)
     num_unmasked = mask_cuda.sum().item()
 
@@ -145,7 +146,7 @@ def apply_trained_kmeans(config, net, test_dataloader, kmeans):
     targets = targets.masked_select(mask_cuda)  # can do because flat
 
     assert (x_out.shape == (num_unmasked, net.module.features_sz))
-    preds = torch.from_numpy(kmeans.predict(x_out)).cuda()
+    preds = torch.from_numpy(kmeans.predict(x_out)).to(global_device)
 
     preds_all[actual_num_unmasked: actual_num_unmasked + num_unmasked] = preds
     targets_all[
@@ -169,7 +170,7 @@ def apply_trained_kmeans(config, net, test_dataloader, kmeans):
     selected = (preds_all == pred_i).cpu()
     reordered_preds[selected] = target_i
 
-  reordered_preds = reordered_preds.cuda()
+  reordered_preds = reordered_preds.to(global_device)
 
   # this checks values
   acc = _acc(reordered_preds, targets_all, config.gt_k, verbose=config.verbose)

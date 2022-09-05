@@ -1,3 +1,4 @@
+from code.global_device import global_device
 import numpy as np
 import torch
 import torch.nn.functional as F
@@ -97,13 +98,13 @@ def make_triplets_data(config):
 def triplets_get_data(config, net, dataloader, sobel):
   num_batches = len(dataloader)
   flat_targets_all = torch.zeros((num_batches * config.batch_sz),
-                                 dtype=torch.int32).cuda()
+                                 dtype=torch.int32).to(global_device)
   flat_preds_all = torch.zeros((num_batches * config.batch_sz),
-                               dtype=torch.int32).cuda()
+                               dtype=torch.int32).to(global_device)
 
   num_test = 0
   for b_i, batch in enumerate(dataloader):
-    imgs = batch[0].cuda()
+    imgs = batch[0].to(global_device)
 
     if sobel:
       imgs = sobel_process(imgs, config.include_rgb)
@@ -123,7 +124,7 @@ def triplets_get_data(config, net, dataloader, sobel):
     flat_preds_curr = torch.argmax(x_outs, dim=1)  # along output_k
     flat_preds_all[start_i:(start_i + num_test_curr)] = flat_preds_curr
 
-    flat_targets_all[start_i:(start_i + num_test_curr)] = flat_targets.cuda()
+    flat_targets_all[start_i:(start_i + num_test_curr)] = flat_targets.to(global_device)
 
   flat_preds_all = flat_preds_all[:num_test]
   flat_targets_all = flat_targets_all[:num_test]
@@ -135,13 +136,13 @@ def triplets_get_data_kmeans_on_features(config, net, dataloader, sobel):
   # ouput of network is features (not softmaxed)
   num_batches = len(dataloader)
   flat_targets_all = torch.zeros((num_batches * config.batch_sz),
-                                 dtype=torch.int32).cuda()
+                                 dtype=torch.int32).to(global_device)
   features_all = np.zeros((num_batches * config.batch_sz, config.output_k),
                           dtype=np.float32)
 
   num_test = 0
   for b_i, batch in enumerate(dataloader):
-    imgs = batch[0].cuda()
+    imgs = batch[0].to(global_device)
 
     if sobel:
       imgs = sobel_process(imgs, config.include_rgb)
@@ -159,13 +160,13 @@ def triplets_get_data_kmeans_on_features(config, net, dataloader, sobel):
 
     start_i = b_i * config.batch_sz
     features_all[start_i:(start_i + num_test_curr), :] = x_outs.cpu().numpy()
-    flat_targets_all[start_i:(start_i + num_test_curr)] = flat_targets.cuda()
+    flat_targets_all[start_i:(start_i + num_test_curr)] = flat_targets.to(global_device)
 
   features_all = features_all[:num_test, :]
   flat_targets_all = flat_targets_all[:num_test]
 
   kmeans = KMeans(n_clusters=config.gt_k).fit(features_all)
-  flat_preds_all = torch.from_numpy(kmeans.labels_).cuda()
+  flat_preds_all = torch.from_numpy(kmeans.labels_).to(global_device)
 
   assert (flat_targets_all.shape == flat_preds_all.shape)
   assert (max(flat_preds_all) < config.gt_k)
@@ -195,7 +196,7 @@ def triplets_eval(config, net, dataloader_test, sobel):
 
   found = torch.zeros(config.gt_k)  # sanity
   reordered_preds = torch.zeros(num_samples,
-                                dtype=flat_preds_all.dtype).cuda()
+                                dtype=flat_preds_all.dtype).to(global_device)
 
   for pred_i, target_i in match:
     reordered_preds[flat_preds_all == pred_i] = target_i

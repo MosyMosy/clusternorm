@@ -1,3 +1,4 @@
+from code.global_device import global_device
 import os
 import pickle
 from sys import stdout as sysout
@@ -59,7 +60,7 @@ class DoerschDataset(data.Dataset):
       mean = float(self.mean[remaining_channel])
       stddev = float(self.stddev[remaining_channel] / 100.)
       noise = torch.zeros((2, self.input_sz, self.input_sz),
-                          dtype=torch.float32).cuda()
+                          dtype=torch.float32).to(global_device)
       noise = noise.normal_(mean, stddev)
 
       # noise = np.random.normal(loc=mean,

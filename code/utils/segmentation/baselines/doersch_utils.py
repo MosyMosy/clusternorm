@@ -1,3 +1,4 @@
+from code.global_device import global_device
 import numpy as np
 import torch
 
@@ -60,7 +61,7 @@ def doersch_loss(position_pred, centre, other, position_gt, mask,
   norm_factor = mask_per_pred.sum().item()
 
   # use CrossEntropyLoss
-  gt = torch.ones(bn, dtype=torch.int64).cuda() * position_gt
+  gt = torch.ones(bn, dtype=torch.int64).to(global_device) * position_gt
   per_elem_loss = crossent(position_pred, gt)
   assert (per_elem_loss.shape == (bn,))
   loss = (mask_per_pred * per_elem_loss).sum() / norm_factor

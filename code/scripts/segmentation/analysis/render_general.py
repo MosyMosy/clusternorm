@@ -1,3 +1,4 @@
+from code.global_device import global_device
 import argparse
 import os
 import pickle
@@ -113,7 +114,7 @@ for model_ind in model_inds:
       print("getting model path %s " % model_path)
       net.load_state_dict(
         torch.load(model_path, map_location=lambda storage, loc: storage))
-      net.cuda()
+      net.to(global_device)
       net = torch.nn.DataParallel(net)
       net.module.eval()
 
@@ -182,7 +183,7 @@ for model_ind in model_inds:
       for b_i, batch in enumerate(imgs_dataloader):
         orig_imgs, flat_targets, mask = batch
         orig_imgs, flat_targets, mask = \
-          orig_imgs.cuda(), flat_targets.numpy(), mask.numpy().astype(np.bool)
+          orig_imgs.to(global_device), flat_targets.numpy(), mask.numpy().astype(np.bool)
 
         if not config.no_sobel:
           imgs = sobel_process(orig_imgs, config.include_rgb,

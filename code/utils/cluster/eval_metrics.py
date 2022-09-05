@@ -12,7 +12,7 @@ def _original_match(flat_preds, flat_targets, preds_k, targets_k):
 
   assert (isinstance(flat_preds, torch.Tensor) and
           isinstance(flat_targets, torch.Tensor) and
-          flat_preds.is_cuda and flat_targets.is_cuda)
+          (flat_preds.device == flat_targets.device))
 
   out_to_gts = {}
   out_to_gts_scores = {}
@@ -30,7 +30,7 @@ def _original_match(flat_preds, flat_targets, preds_k, targets_k):
 def _hungarian_match(flat_preds, flat_targets, preds_k, targets_k):
   assert (isinstance(flat_preds, torch.Tensor) and
           isinstance(flat_targets, torch.Tensor) and
-          flat_preds.is_cuda and flat_targets.is_cuda)
+          (flat_preds.device == flat_targets.device))
 
   num_samples = flat_targets.shape[0]
 
@@ -59,7 +59,7 @@ def _hungarian_match(flat_preds, flat_targets, preds_k, targets_k):
 def _acc(preds, targets, num_k, verbose=0):
   assert (isinstance(preds, torch.Tensor) and
           isinstance(targets, torch.Tensor) and
-          preds.is_cuda and targets.is_cuda)
+          (preds.device == targets.device))
 
   if verbose >= 2:
     print("calling acc...")

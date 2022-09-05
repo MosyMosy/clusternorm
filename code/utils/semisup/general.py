@@ -1,3 +1,4 @@
+from code.global_device import global_device
 import numpy as np
 import torch
 from torch import nn as nn
@@ -9,7 +10,7 @@ from code.utils.cluster.transforms import sobel_process
 def get_dlen(net_features, dataloader, include_rgb=None,
              penultimate_features=False):
   for i, (imgs, _) in enumerate(dataloader):
-    imgs = Variable(sobel_process(imgs.cuda(), include_rgb)).cpu()
+    imgs = Variable(sobel_process(imgs.to(global_device), include_rgb)).cpu()
     x_features = net_features(imgs, trunk_features=True,
                               penultimate_features=penultimate_features)
 
@@ -25,7 +26,7 @@ def assess_acc(net, test_loader, gt_k=None, include_rgb=None,
   correct = 0
   total = 0
   for i, (imgs, targets) in enumerate(test_loader):
-    imgs = Variable(sobel_process(imgs.cuda(), include_rgb))
+    imgs = Variable(sobel_process(imgs.to(global_device), include_rgb))
 
     with torch.no_grad():
       x_out = net(imgs, penultimate_features=penultimate_features)
@@ -49,7 +50,7 @@ def assess_acc_block(net, test_loader, gt_k=None, include_rgb=None,
   all = None
   all_targets = None
   for i, (imgs, targets) in enumerate(test_loader):
-    imgs = Variable(sobel_process(imgs.cuda(), include_rgb))
+    imgs = Variable(sobel_process(imgs.to(global_device), include_rgb))
 
     with torch.no_grad():
       x_out = net(imgs, penultimate_features=penultimate_features)

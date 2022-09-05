@@ -1,5 +1,5 @@
 from __future__ import print_function
-
+from code.global_device import global_device
 import argparse
 import itertools
 import os
@@ -184,7 +184,7 @@ def train(render_count=-1):
     net.load_state_dict(
       torch.load(model_path, map_location=lambda storage, loc: storage))
 
-  net.cuda()
+  net.to(global_device)
   net = torch.nn.DataParallel(net)
   net.train()
 
@@ -313,10 +313,10 @@ def train(render_count=-1):
 
           all_imgs = torch.zeros((config.batch_sz, config.in_channels,
                                   config.input_sz,
-                                  config.input_sz)).cuda()
+                                  config.input_sz)).to(global_device)
           all_imgs_tf = torch.zeros((config.batch_sz, config.in_channels,
                                      config.input_sz,
-                                     config.input_sz)).cuda()
+                                     config.input_sz)).to(global_device)
 
           imgs_curr = tup[0][0]  # always the first
           curr_batch_sz = imgs_curr.size(0)
@@ -327,9 +327,9 @@ def train(render_count=-1):
             actual_batch_start = d_i * curr_batch_sz
             actual_batch_end = actual_batch_start + curr_batch_sz
             all_imgs[actual_batch_start:actual_batch_end, :, :, :] = \
-              imgs_curr.cuda()
+              imgs_curr.to(global_device)
             all_imgs_tf[actual_batch_start:actual_batch_end, :, :, :] = \
-              imgs_tf_curr.cuda()
+              imgs_tf_curr.to(global_device)
 
           if not (curr_batch_sz == config.dataloader_batch_sz):
             print("last batch sz %d" % curr_batch_sz)
@@ -477,7 +477,7 @@ def train(render_count=-1):
                   "w") as text_file:
           text_file.write("%s" % config)
 
-      net.module.cuda()
+      net.module.to(global_device)
 
     with open(os.path.join(config.out_dir, "config.pickle"),
               'wb') as outfile:

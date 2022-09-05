@@ -1,4 +1,5 @@
 from __future__ import print_function
+from code.global_device import global_device
 
 import argparse
 import os
@@ -201,7 +202,7 @@ if config.restart:
     choose_best = True
   net.load_state_dict(
     torch.load(model_path, map_location=lambda storage, loc: storage))
-net.cuda()
+net.to(global_device)
 net = torch.nn.DataParallel(net)
 
 optimiser = get_opt(config.opt)(net.module.parameters(), lr=config.lr)
@@ -358,7 +359,7 @@ for e_i in range(next_epoch, config.num_epochs):
       torch.save(net.module.state_dict(),
                  os.path.join(config.out_dir, "e_%d_net.pytorch" % e_i))
 
-    net.module.cuda()
+    net.module.to(global_device)
 
   with open(os.path.join(config.out_dir, "config.pickle"),
             "wb") as outfile:

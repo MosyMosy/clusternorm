@@ -1,3 +1,4 @@
+from code.global_device import global_device
 import glob
 import os
 import pickle
@@ -232,7 +233,7 @@ def predict_and_reassemble(config, input_blocks, num_big_imgs,
   else:
     net.load_state_dict(stored)
 
-  net.cuda()
+  net.to(global_device)
   net = torch.nn.DataParallel(net)
   net.module.eval()  # <- put in eval state
 

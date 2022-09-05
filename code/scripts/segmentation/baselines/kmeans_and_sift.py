@@ -1,4 +1,5 @@
 from __future__ import print_function
+from code.global_device import global_device
 
 import argparse
 import os
@@ -262,8 +263,8 @@ def main():
   print("finished prediction for mapping assign/test data")
   sys.stdout.flush()
 
-  assign_preds = torch.from_numpy(assign_preds).cuda()
-  assign_labels = torch.from_numpy(assign_labels).cuda()
+  assign_preds = torch.from_numpy(assign_preds).to(global_device)
+  assign_labels = torch.from_numpy(assign_labels).to(global_device)
 
   if archetype_config.eval_mode == "hung":
     match = _hungarian_match(assign_preds, assign_labels,
@@ -278,7 +279,7 @@ def main():
 
   # reorder predictions to be same cluster assignments as gt_k
   found = torch.zeros(archetype_config.gt_k)
-  reordered_preds = torch.zeros(num_samples).to(torch.int32).cuda()
+  reordered_preds = torch.zeros(num_samples).to(torch.int32).to(global_device)
   for pred_i, target_i in match:
     reordered_preds[assign_preds == pred_i] = target_i
     found[pred_i] = 1

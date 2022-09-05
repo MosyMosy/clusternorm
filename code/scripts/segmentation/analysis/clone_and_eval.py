@@ -1,4 +1,5 @@
 from __future__ import print_function
+from code.global_device import global_device
 
 import argparse
 import pickle
@@ -66,7 +67,7 @@ net = archs.__dict__[old_config.arch](old_config)
 net_state = torch.load(os.path.join(old_config.out_dir, "best_net.pytorch"),
                        map_location=lambda storage, loc: storage)
 net.load_state_dict(net_state)
-net.cuda()
+net.to(global_device)
 net = torch.nn.DataParallel(net)
 
 stats_dict = segmentation_eval(old_config, net,

@@ -1,4 +1,5 @@
 from __future__ import print_function
+from code.global_device import global_device
 
 import argparse
 import itertools
@@ -169,7 +170,7 @@ def train():
     dict = torch.load(os.path.join(config.out_dir, dict_name),
                       map_location=lambda storage, loc: storage)
     net.load_state_dict(dict["net"])
-  net.cuda()
+  net.to(global_device)
   net = torch.nn.DataParallel(net)
   net.train()
 
@@ -269,14 +270,14 @@ def train():
 
         all_img1 = torch.zeros(config.batch_sz, pre_channels,
                                config.input_sz, config.input_sz).to(
-          torch.float32).cuda()
+          torch.float32).to(global_device)
         all_img2 = torch.zeros(config.batch_sz, pre_channels,
                                config.input_sz, config.input_sz).to(
-          torch.float32).cuda()
+          torch.float32).to(global_device)
         all_affine2_to_1 = torch.zeros(config.batch_sz, 2, 3).to(
-          torch.float32).cuda()
+          torch.float32).to(global_device)
         all_mask_img1 = torch.zeros(config.batch_sz, config.input_sz,
-                                    config.input_sz).to(torch.float32).cuda()
+                                    config.input_sz).to(torch.float32).to(global_device)
 
         curr_batch_sz = tup[0][0].shape[0]
         for d_i in range(config.num_dataloaders):
@@ -427,7 +428,7 @@ def train():
                   "w") as text_file:
           text_file.write("%s" % config)
 
-      net.module.cuda()
+      net.module.to(global_device)
 
     with open(os.path.join(config.out_dir, "config.pickle"), 'wb') as outfile:
       pickle.dump(config, outfile)

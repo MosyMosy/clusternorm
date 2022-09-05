@@ -3,6 +3,7 @@
 # /cocostuff.py
 
 from __future__ import print_function
+from code.global_device import global_device
 
 import os.path as osp
 import pickle
@@ -138,7 +139,7 @@ class _Coco(data.Dataset):
     # uint8 tensor as masks should be binary, also for consistency with
     # prepare_train, but converted to float32 in main loop because is used
     # multiplicatively in loss
-    mask_img1 = torch.from_numpy(mask_img1.astype(np.uint8)).cuda()
+    mask_img1 = torch.from_numpy(mask_img1.astype(np.uint8)).to(global_device)
 
     # make img2 different from img1 (img)
 
@@ -185,8 +186,8 @@ class _Coco(data.Dataset):
 
     # convert both to channel-first tensor format
     # make them all cuda tensors now, except label, for optimality
-    img1 = torch.from_numpy(img1).permute(2, 0, 1).cuda()
-    img2 = torch.from_numpy(img2).permute(2, 0, 1).cuda()
+    img1 = torch.from_numpy(img1).permute(2, 0, 1).to(global_device)
+    img2 = torch.from_numpy(img2).permute(2, 0, 1).to(global_device)
 
     # mask if required
     if self.mask_input:
@@ -205,7 +206,7 @@ class _Coco(data.Dataset):
                                                        **affine_kwargs)  #
       # tensors
     else:
-      affine2_to_1 = torch.zeros([2, 3]).to(torch.float32).cuda()  # identity
+      affine2_to_1 = torch.zeros([2, 3]).to(torch.float32).to(global_device)  # identity
       affine2_to_1[0, 0] = 1
       affine2_to_1[1, 1] = 1
 
@@ -266,7 +267,7 @@ class _Coco(data.Dataset):
     # uint8 tensor as masks should be binary, also for consistency with
     # prepare_train, but converted to float32 in main loop because is used
     # multiplicatively in loss
-    mask_img1 = torch.from_numpy(mask_img1.astype(np.uint8)).cuda()
+    mask_img1 = torch.from_numpy(mask_img1.astype(np.uint8)).to(global_device)
 
     # converting to PIL does not change underlying np datatype it seems
     img1 = Image.fromarray(img.astype(np.uint8))
@@ -282,7 +283,7 @@ class _Coco(data.Dataset):
 
     # convert both to channel-first tensor format
     # make them all cuda tensors now, except label, for optimality
-    img1 = torch.from_numpy(img1).permute(2, 0, 1).cuda()
+    img1 = torch.from_numpy(img1).permute(2, 0, 1).to(global_device)
 
     # mask if required
     if self.mask_input:

@@ -1,4 +1,5 @@
 from __future__ import print_function
+from code.global_device import global_device
 
 import argparse
 import os
@@ -177,7 +178,7 @@ def main():
     net.load_state_dict(
       torch.load(model_path, map_location=lambda storage, loc: storage))
 
-  net.cuda()
+  net.to(global_device)
   net = torch.nn.DataParallel(net)
 
   opt_trunk = torch.optim.Adam(
@@ -198,7 +199,7 @@ def main():
   else:
     print("using new optimiser state")
 
-  criterion = nn.CrossEntropyLoss().cuda()
+  criterion = nn.CrossEntropyLoss().to(global_device)
 
   if not config.restart:
     net.eval()
@@ -239,8 +240,8 @@ def main():
     avg_loss = 0.
     num_batches = len(train_loader)
     for i, (imgs, targets) in enumerate(train_loader):
-      imgs = sobel_process(imgs.cuda(), old_config.include_rgb)
-      targets = targets.cuda()
+      imgs = sobel_process(imgs.to(global_device), old_config.include_rgb)
+      targets = targets.to(global_device)
 
       x_out = net(imgs, penultimate_features=config.penultimate_features)
       loss = criterion(x_out, targets)
@@ -311,7 +312,7 @@ def main():
                    os.path.join(config.out_dir,
                                 "latest_optimiser.pytorch"))
 
-      net.module.cuda()
+      net.module.to(global_device)
 
       config.last_epoch = e_i  # for last saved version
 

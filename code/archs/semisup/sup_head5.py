@@ -1,5 +1,5 @@
 import torch.nn as nn
-
+from code.global_device import global_device
 # suphead2 but with batchnorm instead of relu
 
 __all__ = ["SupHead5"]
@@ -18,7 +18,7 @@ class SupHead5(nn.Module):
       nn.Linear(2048, gt_k)
     )
 
-    net_head.cuda()
+    net_head.to(global_device)
     self.head = net_head
 
     for m in self.head.modules():

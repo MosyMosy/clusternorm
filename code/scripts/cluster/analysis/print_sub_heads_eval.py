@@ -1,3 +1,4 @@
+from code.global_device import global_device
 import argparse
 import os
 import pickle
@@ -35,7 +36,7 @@ def main():
     model_path = os.path.join(config.out_dir, "best_net.pytorch")
     net.load_state_dict(
       torch.load(model_path, map_location=lambda storage, loc: storage))
-    net.cuda()
+    net.to(global_device)
     net = torch.nn.DataParallel(net)
 
     dataloaders_head_A, dataloaders_head_B, \

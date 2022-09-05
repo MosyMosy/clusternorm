@@ -2,7 +2,6 @@ import random
 import torch
 import torch.nn as nn
 
-
 class cluster_MixStyle(nn.Module):
     """cluster based MixStyle.
     Reference:
@@ -50,25 +49,31 @@ class cluster_MixStyle(nn.Module):
         cluster_map_split_ind = torch.cumsum(cluster_map_count, dim=0, dtype=torch.int32) - 1 # make index as zero-based
         cluster_map_sorted_ind = torch.argsort(cluster_map_one_hot, dim=0)        
         clustered_samples = torch.split(x[cluster_map_sorted_ind], cluster_map_split_ind)
+        clustered_samples = torch.stack(clustered_samples).to(x.device)
+        
+        cluster_map_sorted_ind_inverse = torch.argsort(cluster_map_sorted_ind, dim=0)
             
-        # Statistics over sample's spatial dimensions. Keep clusters, samples and channels
-        sample_mu = clustered_samples.mean(dim=[3, 4], keepdim=True).detach()
-        sample_std = ((clustered_samples.var(dim=[3, 4], keepdim=True) + self.eps).sqrt()).detach()
-        clustered_samples_normed = (clustered_samples - sample_mu) / sample_std
-        
         # Statistics over each cluster. Keep clusters and channels
-        cluster_mu = clustered_samples.mean(dim=[1, 3, 4], keepdim=True).detach()
+        cluster_mu = clustered_samples.mean(dim=[1, 3, 4], keepdim=True).detach()        
+        cluster_mu = torch.flatten(cluster_mu, end_dim=0)        
+        cluster_mu = torch.repeat_interleave(cluster_mu, cluster_map_count)
+        cluster_mu = cluster_mu[cluster_map_sorted_ind_inverse]
+        
         cluster_std = ((clustered_samples.var(dim=[1, 3, 4], keepdim=True) + self.eps).sqrt()).detach()
-
-        mu_mix = sample_mu * lmda + torch.unsqueeze(cluster_mu, 1) * (1-lmda)
-        std_mix = sample_std * lmda + torch.unsqueeze(cluster_std, 1) * (1-lmda)
+        cluster_std = torch.flatten(cluster_std, end_dim=0)
+        cluster_std = torch.repeat_interleave(cluster_std, cluster_map_count)
+        cluster_std = cluster_std[cluster_map_sorted_ind_inverse]
         
-        cluster_mixstyle = clustered_samples_normed * std_mix + mu_mix
-        cluster_mixstyle = torch.flatten(cluster_mixstyle, end_dim=0)
-        cluster_map_sorted_ind_inverse = torch.argsort(cluster_map_sorted_ind, dim=0)        
-        # resort the samples as it was originally. This essential to have a valid cluster_map for the subsequent layers
-        return cluster_mixstyle[cluster_map_sorted_ind_inverse] 
+        # Statistics over sample's spatial dimensions. Keep clusters, samples and channels
+        sample_mu = x.mean(dim=[2, 3], keepdim=True).detach()
+        sample_std = ((x.var(dim=[2, 3], keepdim=True) + self.eps).sqrt()).detach()
         
+        x_normed = (x-sample_mu) / sample_std            
+        mu_mix = sample_mu * lmda + cluster_mu, 1 * (1-lmda)
+        std_mix = sample_std * lmda + cluster_std, 1 * (1-lmda)
+                
+        return x_normed * std_mix + mu_mix
+                
     @staticmethod
     def activate_mixstyle(m):
         if type(m) == cluster_MixStyle:
