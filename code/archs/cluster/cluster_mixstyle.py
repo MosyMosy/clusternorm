@@ -52,16 +52,17 @@ class cluster_MixStyle(nn.Module):
         cluster_map_sorted_ind_inverse = torch.argsort(cluster_map_sorted_ind, dim=0)
             
         # Statistics over each cluster. Keep channels. Note: clusters have different sizes
-        cluster_mu = torch.stack([cluster.mean(dim=[0, 2, 3], keepdim=True).detach() for cluster in clustered_samples_list])       
+        cluster_mu = torch.stack([cluster.mean(dim=[0, 2, 3], keepdim=True).detach() for cluster in clustered_samples_list])  
+        print(cluster_mu.size())     
         cluster_mu = torch.flatten(cluster_mu, end_dim=0)    
         print(cluster_map_count)    
         print(cluster_mu.size())
-        cluster_mu = torch.repeat_interleave(cluster_mu, cluster_map_count)
+        cluster_mu = torch.repeat_interleave(cluster_mu, cluster_map_count, dim=0)
         cluster_mu = cluster_mu[cluster_map_sorted_ind_inverse]
         
         cluster_std = torch.stack([((cluster.var(dim=[0, 2, 3], keepdim=True) + self.eps).sqrt()).detach() for cluster in clustered_samples_list])
         cluster_std = torch.flatten(cluster_std, end_dim=0)
-        cluster_std = torch.repeat_interleave(cluster_std, cluster_map_count)
+        cluster_std = torch.repeat_interleave(cluster_std, cluster_map_count, dim=0)
         cluster_std = cluster_std[cluster_map_sorted_ind_inverse]
         
         # Statistics over sample's spatial dimensions. Keep clusters, samples and channels
