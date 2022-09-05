@@ -48,13 +48,14 @@ class cluster_MixStyle(nn.Module):
         _, cluster_map_count = torch.unique(cluster_map_one_hot, sorted=True, return_counts=True)
         cluster_map_sorted_ind = torch.argsort(cluster_map_one_hot, dim=0)        
         clustered_samples_list = torch.split(x[cluster_map_sorted_ind], cluster_map_count.tolist())
-        # clustered_samples = torch.stack(clustered_samples).to(x.device)
         
         cluster_map_sorted_ind_inverse = torch.argsort(cluster_map_sorted_ind, dim=0)
             
-        # Statistics over each cluster. Keep channels
+        # Statistics over each cluster. Keep channels. Note: clusters have different sizes
         cluster_mu = torch.stack([cluster.mean(dim=[0, 2, 3], keepdim=True).detach() for cluster in clustered_samples_list])       
-        cluster_mu = torch.flatten(cluster_mu, end_dim=0)        
+        cluster_mu = torch.flatten(cluster_mu, end_dim=0)    
+        print(cluster_map_count)    
+        print(cluster_mu.size())
         cluster_mu = torch.repeat_interleave(cluster_mu, cluster_map_count)
         cluster_mu = cluster_mu[cluster_map_sorted_ind_inverse]
         
