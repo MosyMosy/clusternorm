@@ -51,12 +51,12 @@ class cluster_MixStyle(nn.Module):
         cluster_map_sorted_ind = torch.argsort(cluster_map_one_hot, dim=0)        
         clustered_samples = torch.split(x[cluster_map_sorted_ind], cluster_map_split_ind)
             
-        # Statistics over sample's spatial dimensions
+        # Statistics over sample's spatial dimensions. Keep clusters, samples and channels
         sample_mu = clustered_samples.mean(dim=[3, 4], keepdim=True).detach()
         sample_std = ((clustered_samples.var(dim=[3, 4], keepdim=True) + self.eps).sqrt()).detach()
         clustered_samples_normed = (clustered_samples - sample_mu) / sample_std
         
-        # Statistics over each cluster
+        # Statistics over each cluster. Keep clusters and channels
         cluster_mu = clustered_samples.mean(dim=[1, 3, 4], keepdim=True).detach()
         cluster_std = ((clustered_samples.var(dim=[1, 3, 4], keepdim=True) + self.eps).sqrt()).detach()
 
