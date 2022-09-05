@@ -48,7 +48,7 @@ class cluster_MixStyle(nn.Module):
         _, cluster_map_count = torch.unique(cluster_map_one_hot, sorted=True, return_counts=True)
         cluster_map_split_ind = torch.cumsum(cluster_map_count, dim=0, dtype=torch.int32) - 1 # make index as zero-based
         cluster_map_sorted_ind = torch.argsort(cluster_map_one_hot, dim=0)        
-        clustered_samples = torch.split(x[cluster_map_sorted_ind], cluster_map_split_ind)
+        clustered_samples = torch.split(x[cluster_map_sorted_ind], cluster_map_split_ind.tolist())
         clustered_samples = torch.stack(clustered_samples).to(x.device)
         
         cluster_map_sorted_ind_inverse = torch.argsort(cluster_map_sorted_ind, dim=0)
