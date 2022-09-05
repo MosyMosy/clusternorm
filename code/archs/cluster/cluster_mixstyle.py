@@ -46,20 +46,19 @@ class cluster_MixStyle(nn.Module):
         # Turn the first head's probabilities to one-hot
         cluster_map_one_hot = torch.argmax(cluster_map[0], dim=1)
         _, cluster_map_count = torch.unique(cluster_map_one_hot, sorted=True, return_counts=True)
-        print(cluster_map_count)
         cluster_map_sorted_ind = torch.argsort(cluster_map_one_hot, dim=0)        
-        clustered_samples = torch.split(x[cluster_map_sorted_ind], cluster_map_count.tolist())
-        clustered_samples = torch.stack(clustered_samples).to(x.device)
+        clustered_samples_list = torch.split(x[cluster_map_sorted_ind], cluster_map_count.tolist())
+        # clustered_samples = torch.stack(clustered_samples).to(x.device)
         
         cluster_map_sorted_ind_inverse = torch.argsort(cluster_map_sorted_ind, dim=0)
             
-        # Statistics over each cluster. Keep clusters and channels
-        cluster_mu = clustered_samples.mean(dim=[1, 3, 4], keepdim=True).detach()        
+        # Statistics over each cluster. Keep channels
+        cluster_mu = torch.stack([cluster.mean(dim=[0, 2, 3], keepdim=True).detach() for cluster in clustered_samples_list])       
         cluster_mu = torch.flatten(cluster_mu, end_dim=0)        
         cluster_mu = torch.repeat_interleave(cluster_mu, cluster_map_count)
         cluster_mu = cluster_mu[cluster_map_sorted_ind_inverse]
         
-        cluster_std = ((clustered_samples.var(dim=[1, 3, 4], keepdim=True) + self.eps).sqrt()).detach()
+        cluster_std = torch.stack([((cluster.var(dim=[0, 2, 3], keepdim=True) + self.eps).sqrt()).detach() for cluster in clustered_samples_list])
         cluster_std = torch.flatten(cluster_std, end_dim=0)
         cluster_std = torch.repeat_interleave(cluster_std, cluster_map_count)
         cluster_std = cluster_std[cluster_map_sorted_ind_inverse]
