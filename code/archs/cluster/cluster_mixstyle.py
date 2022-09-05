@@ -53,10 +53,7 @@ class cluster_MixStyle(nn.Module):
             
         # Statistics over each cluster. Keep channels. Note: clusters have different sizes
         cluster_mu = torch.stack([cluster.mean(dim=[0, 2, 3], keepdim=True).detach() for cluster in clustered_samples_list])  
-        print(cluster_mu.size())     
         cluster_mu = torch.flatten(cluster_mu, end_dim=1)    
-        print(cluster_map_count)    
-        print(cluster_mu.size())
         cluster_mu = torch.repeat_interleave(cluster_mu, cluster_map_count, dim=0)
         cluster_mu = cluster_mu[cluster_map_sorted_ind_inverse]
         
@@ -72,7 +69,9 @@ class cluster_MixStyle(nn.Module):
         x_normed = (x-sample_mu) / sample_std            
         mu_mix = sample_mu * lmda + cluster_mu, 1 * (1-lmda)
         std_mix = sample_std * lmda + cluster_std, 1 * (1-lmda)
-                
+        print(x_normed.size())
+        print(std_mix.size()) 
+        print(mu_mix.size())        
         return x_normed * std_mix + mu_mix
                 
     @staticmethod
