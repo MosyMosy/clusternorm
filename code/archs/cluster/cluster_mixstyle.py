@@ -67,7 +67,7 @@ class cluster_MixStyle(nn.Module):
         sample_std = ((x.var(dim=[2, 3], keepdim=True) + self.eps).sqrt()).detach()
         
         x_normed = (x-sample_mu) / sample_std            
-        mu_mix = sample_mu * lmda + cluster_mu (1-lmda)
+        mu_mix = sample_mu * lmda + cluster_mu * (1-lmda)
         std_mix = sample_std * lmda + cluster_std * (1-lmda)
 
         return x_normed * std_mix + mu_mix
