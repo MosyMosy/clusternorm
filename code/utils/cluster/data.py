@@ -36,14 +36,6 @@ def cluster_twohead_create_dataloaders(config):
     elif config.dataset == "CIFAR20":
       dataset_class = torchvision.datasets.CIFAR100
       target_transform = _cifar100_to_cifar20
-    elif config.dataset == "pacs_art":
-      dataset_class = pacs_art
-    elif config.dataset == "pacs_cartoon":
-      dataset_class = pacs_cartoon
-    elif config.dataset == "pacs_photo":
-      dataset_class = pacs_photo
-    elif config.dataset == "pacs_sketch":
-      dataset_class = pacs_sketch
     else:
       assert (False)
 
@@ -67,8 +59,9 @@ def cluster_twohead_create_dataloaders(config):
       dataset_class = pacs_sketch
     else:
       assert (False)
-     # datasets produce either 2 or 5 channel images based on config.include_rgb
+    # datasets produce either 2 or 5 channel images based on config.include_rgb
     tf1, tf2, tf3 = sobel_make_transforms(config)
+    target_transform = lambda x: x - 1
     
   elif config.dataset == "STL10":
     assert (config.mix_train)
