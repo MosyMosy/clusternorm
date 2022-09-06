@@ -7,37 +7,6 @@ from torchvision.datasets.utils import download_and_extract_archive
 
 __all__ = ["pacs_art","pacs_cartoon","pacs_photo","pacs_sketch"]
 
-def download_data(root: str, file_name: str, archive_name: str, url_link: str):
-    """
-    Download file from internet url link.
-
-    Args:
-        root (str) The directory to put downloaded files.
-        file_name: (str) The name of the unzipped file.
-        archive_name: (str) The name of archive(zipped file) downloaded.
-        url_link: (str) The url link to download data.
-
-    .. note::
-        If `file_name` already exists under path `root`, then it is not downloaded again.
-        Else `archive_name` will be downloaded from `url_link` and extracted to `file_name`.
-    """
-    if not os.path.exists(os.path.join(root, file_name)):
-        print("Downloading {}".format(file_name))
-        # if os.path.exists(os.path.join(root, archive_name)):
-        #     os.remove(os.path.join(root, archive_name))
-        try:
-            download_and_extract_archive(url_link, download_root=root, filename=archive_name, remove_finished=False)
-        except Exception:
-            print("Fail to download {} from url link {}".format(archive_name, url_link))
-            print('Please check you internet connection.'
-                  "Simply trying again may be fine.")
-            exit(0)
-
-def check_exits(root: str, file_name: str):
-    """Check whether `file_name` exists under directory `root`. """
-    if not os.path.exists(os.path.join(root, file_name)):
-        print("Dataset directory {} not found under {}".format(file_name, root))
-        exit(-1)
 
 def read_list_from_file(file_name: str) -> List[str]:
     """Read data from file and convert each line into an element in the list"""
@@ -180,11 +149,6 @@ class PACS(ImageList):
         assert split in ["train", "val", "all", "test"]
             
         data_list_file = os.path.join(root, self.image_list[task].format(split))
-
-        if download:
-            list(map(lambda args: download_data(root, *args), self.download_list))
-        else:
-            list(map(lambda file_name, _: check_exits(root, file_name), self.download_list))
 
         super(PACS, self).__init__(root, PACS.CLASSES, data_list_file=data_list_file, transform= transform,
             target_transform= target_transform)
