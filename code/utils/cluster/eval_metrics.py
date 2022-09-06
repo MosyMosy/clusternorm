@@ -65,8 +65,8 @@ def _acc(preds, targets, num_k, verbose=0):
     print("calling acc...")
 
   assert (preds.shape == targets.shape)
-  print(preds)
-  print(targets)
+  print(preds.max())
+  print(targets.max())
   print(num_k)
   assert (preds.max() < num_k and targets.max() < num_k)
 
