@@ -172,12 +172,13 @@ class PACS(ImageList):
             target_transform: Optional[Callable] = None, download: bool = False):
        
         assert task in self.image_list
-        assert split in ["train", "val", "all", "test"]
+        
         if train:
             split = "train"
         else:
             split = "val"
-                        
+        assert split in ["train", "val", "all", "test"]
+            
         data_list_file = os.path.join(root, self.image_list[task].format(split))
 
         if download:
