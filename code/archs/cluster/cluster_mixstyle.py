@@ -45,6 +45,7 @@ class cluster_MixStyle(nn.Module):
 
         # Turn the first head's probabilities to one-hot
         cluster_map_one_hot = torch.argmax(cluster_map[0], dim=1)
+        
         _, cluster_map_count = torch.unique(cluster_map_one_hot, sorted=True, return_counts=True)
         cluster_map_sorted_ind = torch.argsort(cluster_map_one_hot, dim=0)        
         clustered_samples_list = torch.split(x[cluster_map_sorted_ind], cluster_map_count.tolist())
@@ -62,7 +63,7 @@ class cluster_MixStyle(nn.Module):
         cluster_std = torch.repeat_interleave(cluster_std, cluster_map_count, dim=0)
         cluster_std = cluster_std[cluster_map_sorted_ind_inverse]
         
-        # Statistics over sample's spatial dimensions. Keep clusters, samples and channels
+        # Statistics over sample's spatial dimensions. Keep samples and channels
         sample_mu = x.mean(dim=[2, 3], keepdim=True).detach()
         sample_std = ((x.var(dim=[2, 3], keepdim=True) + self.eps).sqrt()).detach()
         

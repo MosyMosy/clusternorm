@@ -11,6 +11,7 @@ from code.utils.cluster.transforms import sobel_make_transforms, \
   greyscale_make_transforms
 from code.utils.semisup.dataset import TenCropAndFinish
 from .general import reorder_train_deterministic
+from .pacs_data import pacs_art, pacs_cartoon, pacs_photo, pacs_sketch
 
 
 # Used by sobel and greyscale clustering twohead scripts -----------------------
@@ -35,12 +36,40 @@ def cluster_twohead_create_dataloaders(config):
     elif config.dataset == "CIFAR20":
       dataset_class = torchvision.datasets.CIFAR100
       target_transform = _cifar100_to_cifar20
+    elif config.dataset == "pacs_art":
+      dataset_class = pacs_art
+    elif config.dataset == "pacs_cartoon":
+      dataset_class = pacs_cartoon
+    elif config.dataset == "pacs_photo":
+      dataset_class = pacs_photo
+    elif config.dataset == "pacs_sketch":
+      dataset_class = pacs_sketch
     else:
       assert (False)
 
     # datasets produce either 2 or 5 channel images based on config.include_rgb
     tf1, tf2, tf3 = sobel_make_transforms(config)
 
+  elif "pacs" in config.dataset:
+    config.train_partitions_head_A = [True, False]
+    config.train_partitions_head_B = config.train_partitions_head_A
+
+    config.mapping_assignment_partitions = [True, False]
+    config.mapping_test_partitions = [True, False]
+    
+    if config.dataset == "pacs_art":
+      dataset_class = pacs_art
+    elif config.dataset == "pacs_cartoon":
+      dataset_class = pacs_cartoon
+    elif config.dataset == "pacs_photo":
+      dataset_class = pacs_photo
+    elif config.dataset == "pacs_sketch":
+      dataset_class = pacs_sketch
+    else:
+      assert (False)
+     # datasets produce either 2 or 5 channel images based on config.include_rgb
+    tf1, tf2, tf3 = sobel_make_transforms(config)
+    
   elif config.dataset == "STL10":
     assert (config.mix_train)
     if not config.stl_leave_out_unlabelled:
@@ -599,3 +628,7 @@ class DeterministicRandomSampler(Sampler):
 
   def __len__(self):
     return len(self.data_source)
+  
+  
+  # classed from TlLib https://github.com/thuml/Transfer-Learning-Library
+  
