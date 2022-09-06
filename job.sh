@@ -28,6 +28,13 @@ echo "Extract the datasets"
 cd iic_clusternorm/iic_dataset
 tar -xzf cifar-10-python.tar.gz
 
+cd pacs
+tar -xzf cartoon.tgz
+tar -xzf art_painting.tgz
+tar -xzf photo.tgz
+tar -xzf sketch.tgz
+unzip -q image_list.zip
+
 date +"%T"
 echo "----------------------------------< End of data preparation>--------------------------------"
 date +"%T"
@@ -37,7 +44,7 @@ echo "---------------------------------------<Run the program>------------------
 date +"%T"
 cd $SLURM_TMPDIR/iic_clusternorm/clusternorm
 
-CUDA_VISIBLE_DEVICES=0 python -m code.scripts.cluster.clusternorm_sobel_twohead --model_ind 640  --arch ClusterNormNet5gTwoHead --mode IID --dataset pacs_photo --dataset_root $SLURM_TMPDIR/iic_clusternorm/iic_dataset --gt_k 10 --output_k_A 70 --output_k_B 10 --lamb 1.0 --lr 0.0001  --num_epochs 2 --batch_sz 660 --num_dataloaders 3 --num_sub_heads 5 --crop_orig --rand_crop_sz 20 --input_sz 32 --head_A_first --head_B_epochs 2 --out_root $SLURM_TMPDIR/cluster/cluster_norm_pacs_photo_result
+CUDA_VISIBLE_DEVICES=0 python -m code.scripts.cluster.clusternorm_sobel_twohead --model_ind 640  --arch ClusterNormNet5gTwoHead --mode IID --dataset pacs_photo --dataset_root $SLURM_TMPDIR/iic_clusternorm/iic_dataset/pacs --gt_k 10 --output_k_A 70 --output_k_B 10 --lamb 1.0 --lr 0.0001  --num_epochs 2 --batch_sz 660 --num_dataloaders 3 --num_sub_heads 5 --crop_orig --rand_crop_sz 20 --input_sz 32 --head_A_first --head_B_epochs 2 --out_root $SLURM_TMPDIR/cluster/cluster_norm_pacs_photo_result
 
 echo "-----------------------------------<End of run the program>---------------------------------"
 date +"%T"
