@@ -44,16 +44,16 @@ echo "---------------------------------------<Run the program>------------------
 date +"%T"
 cd $SLURM_TMPDIR/iic_clusternorm/clusternorm
 
-CUDA_VISIBLE_DEVICES=0 python -m code.scripts.cluster.clusternorm_sobel_twohead --model_ind 640  --arch ClusterNormNet5gTwoHead --mode IID --dataset pacs_art --dataset_root $SLURM_TMPDIR/iic_clusternorm/iic_dataset/pacs --gt_k 7 --output_k_A 15 --output_k_B 7 --lamb 1.0 --lr 0.0001  --num_epochs 2000 --batch_sz 660 --num_dataloaders 3 --num_sub_heads 1 --crop_orig --rand_crop_sz 20 --input_sz 32 --head_A_first --head_B_epochs 2 --out_root $SLURM_TMPDIR/cluster/cluster_norm_pacs_art_result
+CUDA_VISIBLE_DEVICES=0 python -m code.scripts.cluster.clusternorm_sobel_twohead --model_ind 640  --arch ClusterNormNet5gTwoHead --mode IID --dataset pacs_art --dataset_root $SLURM_TMPDIR/iic_clusternorm/iic_dataset/pacs --gt_k 7 --output_k_A 15 --output_k_B 7 --lamb 1.0 --lr 0.0001  --num_epochs 2000 --batch_sz 660 --num_dataloaders 3 --num_sub_heads 1 --crop_orig --rand_crop_sz 20 --input_sz 32 --head_A_first --head_B_epochs 2 --out_root $SLURM_TMPDIR/cluster/cluster_norm_pacs_art_result &
+CUDA_VISIBLE_DEVICES=1 python -m code.scripts.cluster.clusternorm_sobel_twohead --model_ind 640  --arch ClusterNormNet5gTwoHead --mode IID --dataset pacs_cartoon --dataset_root $SLURM_TMPDIR/iic_clusternorm/iic_dataset/pacs --gt_k 7 --output_k_A 15 --output_k_B 7 --lamb 1.0 --lr 0.0001  --num_epochs 2000 --batch_sz 660 --num_dataloaders 3 --num_sub_heads 1 --crop_orig --rand_crop_sz 20 --input_sz 32 --head_A_first --head_B_epochs 2 --out_root $SLURM_TMPDIR/cluster/cluster_norm_pacs_cartoon_result &
+CUDA_VISIBLE_DEVICES=2 python -m code.scripts.cluster.clusternorm_sobel_twohead --model_ind 640  --arch ClusterNormNet5gTwoHead --mode IID --dataset pacs_photo --dataset_root $SLURM_TMPDIR/iic_clusternorm/iic_dataset/pacs --gt_k 7 --output_k_A 15 --output_k_B 7 --lamb 1.0 --lr 0.0001  --num_epochs 2000 --batch_sz 660 --num_dataloaders 3 --num_sub_heads 1 --crop_orig --rand_crop_sz 20 --input_sz 32 --head_A_first --head_B_epochs 2 --out_root $SLURM_TMPDIR/cluster/cluster_norm_pacs_photo_result &
+CUDA_VISIBLE_DEVICES=3 python -m code.scripts.cluster.clusternorm_sobel_twohead --model_ind 640  --arch ClusterNormNet5gTwoHead --mode IID --dataset pacs_sketch --dataset_root $SLURM_TMPDIR/iic_clusternorm/iic_dataset/pacs --gt_k 7 --output_k_A 15 --output_k_B 7 --lamb 1.0 --lr 0.0001  --num_epochs 2000 --batch_sz 660 --num_dataloaders 3 --num_sub_heads 1 --crop_orig --rand_crop_sz 20 --input_sz 32 --head_A_first --head_B_epochs 2 --out_root $SLURM_TMPDIR/cluster/cluster_norm_pacs_sketch_result &
+
+wait
+
 cp -r $SLURM_TMPDIR/cluster/cluster_norm_pacs_art_result ~/scratch/iic_clusternorm/cluster_norm_pacs_art_result
-
-CUDA_VISIBLE_DEVICES=1 python -m code.scripts.cluster.clusternorm_sobel_twohead --model_ind 640  --arch ClusterNormNet5gTwoHead --mode IID --dataset pacs_cartoon --dataset_root $SLURM_TMPDIR/iic_clusternorm/iic_dataset/pacs --gt_k 7 --output_k_A 15 --output_k_B 7 --lamb 1.0 --lr 0.0001  --num_epochs 2000 --batch_sz 660 --num_dataloaders 3 --num_sub_heads 1 --crop_orig --rand_crop_sz 20 --input_sz 32 --head_A_first --head_B_epochs 2 --out_root $SLURM_TMPDIR/cluster/cluster_norm_pacs_cartoon_result
 cp -r $SLURM_TMPDIR/cluster/cluster_norm_pacs_cartoon_result ~/scratch/iic_clusternorm/cluster_norm_pacs_cartoon_result
-
-CUDA_VISIBLE_DEVICES=2 python -m code.scripts.cluster.clusternorm_sobel_twohead --model_ind 640  --arch ClusterNormNet5gTwoHead --mode IID --dataset pacs_photo --dataset_root $SLURM_TMPDIR/iic_clusternorm/iic_dataset/pacs --gt_k 7 --output_k_A 15 --output_k_B 7 --lamb 1.0 --lr 0.0001  --num_epochs 2000 --batch_sz 660 --num_dataloaders 3 --num_sub_heads 1 --crop_orig --rand_crop_sz 20 --input_sz 32 --head_A_first --head_B_epochs 2 --out_root $SLURM_TMPDIR/cluster/cluster_norm_pacs_photo_result
 cp -r $SLURM_TMPDIR/cluster/cluster_norm_pacs_photo_result ~/scratch/iic_clusternorm/cluster_norm_pacs_photo_result
-
-CUDA_VISIBLE_DEVICES=3 python -m code.scripts.cluster.clusternorm_sobel_twohead --model_ind 640  --arch ClusterNormNet5gTwoHead --mode IID --dataset pacs_sketch --dataset_root $SLURM_TMPDIR/iic_clusternorm/iic_dataset/pacs --gt_k 7 --output_k_A 15 --output_k_B 7 --lamb 1.0 --lr 0.0001  --num_epochs 2000 --batch_sz 660 --num_dataloaders 3 --num_sub_heads 1 --crop_orig --rand_crop_sz 20 --input_sz 32 --head_A_first --head_B_epochs 2 --out_root $SLURM_TMPDIR/cluster/cluster_norm_pacs_sketch_result
 cp -r $SLURM_TMPDIR/cluster/cluster_norm_pacs_sketch_result ~/scratch/iic_clusternorm/cluster_norm_pacs_sketch_result
 
 
