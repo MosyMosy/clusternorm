@@ -26,6 +26,7 @@ matplotlib.use('Agg')
   Modified from cluster_sobel_twohead
 """
 
+
 # Options ----------------------------------------------------------------------
 
 parser = argparse.ArgumentParser()
@@ -110,7 +111,6 @@ config = parser.parse_args()
 # Setup ------------------------------------------------------------------------
 
 
-
 config.twohead = True
 
 if not config.include_rgb:
@@ -178,7 +178,7 @@ if config.restart:
     net.load_state_dict(
         torch.load(model_path, map_location=lambda storage, loc: storage))
 
-net.to(global_device)  # net.to(global_device)
+net.to(global_device)
 net = torch.nn.DataParallel(net)
 net.train()
 
@@ -291,10 +291,10 @@ for e_i in range(next_epoch, config.num_epochs):
                 # one less because this is before sobel
                 all_imgs = torch.zeros(config.batch_sz, config.in_channels - 1,
                                        config.input_sz,
-                                       config.input_sz).to(global_device)  # .to(global_device)
+                                       config.input_sz).to(global_device)
                 all_imgs_tf = torch.zeros(config.batch_sz, config.in_channels - 1,
                                           config.input_sz,
-                                          config.input_sz).to(global_device)  # .to(global_device)
+                                          config.input_sz).to(global_device)
 
                 imgs_curr = tup[0][0]  # always the first
                 curr_batch_sz = imgs_curr.size(0)
@@ -305,9 +305,9 @@ for e_i in range(next_epoch, config.num_epochs):
                     actual_batch_start = d_i * curr_batch_sz
                     actual_batch_end = actual_batch_start + curr_batch_sz
                     all_imgs[actual_batch_start:actual_batch_end, :, :, :] = \
-                        imgs_curr.to(global_device) #.to(global_device)
+                        imgs_curr.to(global_device)
                     all_imgs_tf[actual_batch_start:actual_batch_end, :, :, :] = \
-                        imgs_tf_curr.to(global_device) #.to(global_device)
+                        imgs_tf_curr.to(global_device)
 
                 if not (curr_batch_sz == config.dataloader_batch_sz):
                     print("last batch sz %d" % curr_batch_sz)
@@ -322,9 +322,10 @@ for e_i in range(next_epoch, config.num_epochs):
                 with torch.no_grad():
                     x_cluster_map = net(all_imgs, head=head)
                     x_tf_cluster_map = net(all_imgs_tf, head=head)
-                
-                x_outs = net(all_imgs, head=head, cluster_map = x_cluster_map)
-                x_tf_outs = net(all_imgs_tf, head=head, cluster_map = x_tf_cluster_map)
+
+                x_outs = net(all_imgs, head=head, cluster_map=x_cluster_map)
+                x_tf_outs = net(all_imgs_tf, head=head,
+                                cluster_map=x_tf_cluster_map)
 
                 avg_loss_batch = None  # avg over the sub_heads
                 avg_loss_no_lamb_batch = None
@@ -453,7 +454,7 @@ for e_i in range(next_epoch, config.num_epochs):
                       "w") as text_file:
                 text_file.write("%s" % config)
 
-        net.module.to(global_device) #.to(global_device)
+        net.module.to(global_device)
 
     with open(os.path.join(config.out_dir, "config.pickle"),
               'wb') as outfile:
