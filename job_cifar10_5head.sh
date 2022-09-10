@@ -44,12 +44,12 @@ echo "---------------------------------------<Run the program>------------------
 date +"%T"
 cd $SLURM_TMPDIR/iic_clusternorm/clusternorm
 
-(export CUDA_VISIBLE_DEVICES=0 && nohup python -m code.scripts.cluster.cluster_sobel_twohead --model_ind 640  --arch ClusterNormNet5gTwoHead --mode IID --dataset CIFAR10 --dataset_root $SLURM_TMPDIR/iic_clusternorm/iic_dataset --gt_k 7 --output_k_A 15 --output_k_B 7 --lamb 1.0 --lr 0.0001  --num_epochs 2000 --batch_sz 660 --num_dataloaders 3 --num_sub_heads 5 --crop_orig --rand_crop_sz 20 --input_sz 32 --head_A_first --head_B_epochs 2 --out_root $SLURM_TMPDIR/cluster/iic_cifar10_5head_result > ./iic_cifar10_5head_out.txt
+(export CUDA_VISIBLE_DEVICES=0 && nohup python -m code.scripts.cluster.cluster_sobel_twohead --model_ind 640  --arch ClusterNormNet5gTwoHead --mode IID --dataset CIFAR10 --dataset_root $SLURM_TMPDIR/iic_clusternorm/iic_dataset --gt_k 10 --output_k_A 70 --output_k_B 10 --lamb 1.0 --lr 0.0001  --num_epochs 2000 --batch_sz 660 --num_dataloaders 3 --num_sub_heads 5 --crop_orig --rand_crop_sz 20 --input_sz 32 --head_A_first --head_B_epochs 2 --out_root $SLURM_TMPDIR/cluster/iic_cifar10_5head_result > ./iic_cifar10_5head_out.txt
 cp -r $SLURM_TMPDIR/cluster/iic_cifar10_5head_result ~/scratch/iic_clusternorm/
 cp ./iic_cifar10_5head_out.txt ~/scratch/iic_clusternorm/iic_cifar10_5head_result/
 echo "-----------------------------------<End of the IIC>---------------------------------") &
 
-(export CUDA_VISIBLE_DEVICES=1 && nohup python -m code.scripts.cluster.clusternorm_sobel_twohead --model_ind 640  --arch ClusterNormNet5gTwoHead --mode IID --dataset CIFAR10 --dataset_root $SLURM_TMPDIR/iic_clusternorm/iic_dataset --gt_k 7 --output_k_A 15 --output_k_B 7 --lamb 1.0 --lr 0.0001  --num_epochs 2000 --batch_sz 660 --num_dataloaders 3 --num_sub_heads 5 --crop_orig --rand_crop_sz 20 --input_sz 32 --head_A_first --head_B_epochs 2 --out_root $SLURM_TMPDIR/cluster/clusternorm_cifar10_5head_result > ./clusternorm_cifar10_5head_out.txt
+(export CUDA_VISIBLE_DEVICES=1 && nohup python -m code.scripts.cluster.clusternorm_sobel_twohead --model_ind 640  --arch ClusterNormNet5gTwoHead --mode IID --dataset CIFAR10 --dataset_root $SLURM_TMPDIR/iic_clusternorm/iic_dataset --gt_k 10 --output_k_A 70 --output_k_B 10 --lamb 1.0 --lr 0.0001  --num_epochs 2000 --batch_sz 660 --num_dataloaders 3 --num_sub_heads 5 --crop_orig --rand_crop_sz 20 --input_sz 32 --head_A_first --head_B_epochs 2 --out_root $SLURM_TMPDIR/cluster/clusternorm_cifar10_5head_result > ./clusternorm_cifar10_5head_out.txt
 cp -r $SLURM_TMPDIR/cluster/clusternorm_cifar10_5head_result ~/scratch/iic_clusternorm/
 cp ./clusternorm_cifar10_5head_out.txt ~/scratch/iic_clusternorm/clusternorm_cifar10_5head_result/
 echo "-----------------------------------<End of the Cluster Norm>---------------------------------") &
